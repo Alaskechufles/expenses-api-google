@@ -45,9 +45,7 @@ const ExpensesPage = ({
 
     // Manejar eliminación
     const handleDelete = async (rowIndex) => {
-        if (window.confirm('¿Estás seguro de que quieres eliminar este registro?')) {
-            await deleteRow(rowIndex);
-        }
+        await deleteRow(rowIndex);
     };
 
     // Cancelar formulario

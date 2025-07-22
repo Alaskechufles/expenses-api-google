@@ -23,14 +23,19 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel, isModal = false }
     });
 
     const [transactionType, setTransactionType] = useState(TRANSACTION_TYPES.EXPENSE);
+    const [errors, setErrors] = useState([]);
 
     useEffect(() => {
         if (initialData) {
+            // Para el monto, asegurémonos de mostrar solo el valor absoluto
+            const rawAmount = initialData['How Much?'] || '';
+            const absoluteAmount = Math.abs(parseAmount(rawAmount)).toString();
+
             setFormData({
                 'Date': formatDate(initialData['Date']),
                 'Description': initialData['Description'] || '',
                 'Category': initialData['Category'] || '',
-                'How Much?': initialData['How Much?'] || '',
+                'How Much?': absoluteAmount,
                 'What payment method?': initialData['What payment method?'] || '',
                 'payment manager': initialData['payment manager'] || '',
                 'who recorded': initialData['who recorded'] || ''
@@ -51,6 +56,10 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel, isModal = false }
             ...prev,
             [name]: value
         }));
+        // Limpiar errores cuando el usuario empiece a escribir
+        if (errors.length > 0) {
+            setErrors([]);
+        }
     };
 
     const handleTransactionTypeChange = (type) => {
@@ -60,25 +69,36 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel, isModal = false }
             ...prev,
             'Category': ''
         }));
+        // Limpiar errores
+        if (errors.length > 0) {
+            setErrors([]);
+        }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        // Limpiar errores previos
+        setErrors([]);
+        const newErrors = [];
+
         // Validaciones
         if (!formData['Description'].trim()) {
-            alert('La descripción es obligatoria');
-            return;
+            newErrors.push('La descripción es obligatoria');
         }
 
         if (!formData['Category']) {
-            alert('La categoría es obligatoria');
-            return;
+            newErrors.push('La categoría es obligatoria');
         }
 
         const amount = parseAmount(formData['How Much?']);
-        if (amount <= 0) {
-            alert('El monto debe ser mayor a 0');
+        if (!formData['How Much?'] || amount <= 0) {
+            newErrors.push('El monto debe ser mayor a 0');
+        }
+
+        // Si hay errores, mostrarlos y no enviar el formulario
+        if (newErrors.length > 0) {
+            setErrors(newErrors);
             return;
         }
 
@@ -110,6 +130,29 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel, isModal = false }
     return (
         <div className={containerClasses}>
             {titleElement}
+
+            {/* Mostrar errores de validación */}
+            {errors.length > 0 && (
+                <div className="mb-4 sm:mb-6 bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
+                    <div className="flex">
+                        <div className="flex-shrink-0">
+                            <span className="text-xl">⚠️</span>
+                        </div>
+                        <div className="ml-3">
+                            <h3 className="text-sm font-medium text-red-800">
+                                Por favor corrige los siguientes errores:
+                            </h3>
+                            <div className="mt-2 text-sm text-red-700">
+                                <ul className="list-disc list-inside space-y-1">
+                                    {errors.map((error, index) => (
+                                        <li key={index}>{error}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 {/* Tipo de Transacción */}
@@ -166,9 +209,10 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel, isModal = false }
                         <input
                             type="number"
                             step="0.01"
+                            min="0.01"
                             id="How Much?"
                             name="How Much?"
-                            value={formData['How Much?'].toString().replace('-', '')}
+                            value={Math.abs(parseFloat(formData['How Much?']) || 0) || ''}
                             onChange={handleChange}
                             placeholder="0.00"
                             className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm sm:text-base"
