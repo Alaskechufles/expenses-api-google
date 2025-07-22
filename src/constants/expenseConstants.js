@@ -6,15 +6,20 @@ export const TRANSACTION_TYPES = {
 
 // Categorías de gastos
 export const EXPENSE_CATEGORIES = [
-  "Alimentación",
+  "Donaciones",
   "Transporte",
   "Entretenimiento",
-  "Salud",
+  "Renta",
+  "Ahorros",
+  "Comida",
   "Educación",
-  "Hogar",
-  "Ropa",
-  "Tecnología",
+  "Salud",
+  "Artículos del hogar",
   "Servicios",
+  "Artículos de trabajo",
+  "Regalos",
+  "Prestamos",
+  "Deudas",
   "Otros",
 ];
 
@@ -32,34 +37,26 @@ export const INCOME_CATEGORIES = [
 // Métodos de pago
 export const PAYMENT_METHODS = [
   "Efectivo",
-  "Tarjeta de Débito",
-  "Tarjeta de Crédito",
-  "Transferencia Bancaria",
-  "PayPal",
-  "Bizum",
-  "Otros",
+  "Sigrid Interbank",
+  "Sigrid OH",
+  "Sigrid BCP Amex",
+  "Sigrid BCP Visa",
+  "Sigrid BBVA",
+  "Sigrid Yape/plin/débito",
+  "Diego Yape/plin/débito",
+  "Diego BBVA dolares débito",
 ];
 
 // Gestores de pago
 export const PAYMENT_MANAGERS = [
-  "Banco Santander",
-  "BBVA",
-  "CaixaBank",
-  "ING",
-  "Revolut",
-  "N26",
-  "PayPal",
-  "Efectivo",
+  "Fam Huarsaya Berlanga",
+  "Mamá de Sigrid",
+  "Fam de Diego",
   "Otros",
 ];
 
 // Usuarios que pueden registrar
-export const RECORDERS = [
-  "Usuario 1",
-  "Usuario 2",
-  "Usuario 3",
-  "Administrador",
-];
+export const RECORDERS = ["Sigrid", "Diego"];
 
 // Headers de la hoja de cálculo (deben coincidir exactamente con tu Google Sheet)
 export const SHEET_HEADERS = [

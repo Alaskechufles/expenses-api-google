@@ -100,64 +100,64 @@ const MetricsPage = ({ data }) => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">📊 Métricas Financieras</h1>
-                    <p className="text-gray-600 mt-2">Análisis detallado de tus gastos e ingresos</p>
+                <div className="mb-6 sm:mb-8">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">📊 Métricas Financieras</h1>
+                    <p className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">Análisis detallado de tus gastos e ingresos</p>
                 </div>
 
                 {/* Resumen General */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div className="bg-white rounded-lg shadow p-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                    <div className="bg-white rounded-lg shadow p-4 sm:p-6">
                         <div className="flex items-center">
-                            <div className="text-3xl mr-4">💰</div>
-                            <div>
-                                <p className="text-sm font-medium text-gray-600">Total Ingresos</p>
-                                <p className="text-2xl font-bold text-green-600">{formatCurrency(metrics.totalIncome)}</p>
+                            <div className="text-2xl sm:text-3xl mr-3 sm:mr-4">💰</div>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-xs sm:text-sm font-medium text-gray-600">Total Ingresos</p>
+                                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-600 truncate">{formatCurrency(metrics.totalIncome)}</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-lg shadow p-6">
+                    <div className="bg-white rounded-lg shadow p-4 sm:p-6">
                         <div className="flex items-center">
-                            <div className="text-3xl mr-4">💸</div>
-                            <div>
-                                <p className="text-sm font-medium text-gray-600">Total Gastos</p>
-                                <p className="text-2xl font-bold text-red-600">{formatCurrency(metrics.totalExpenses)}</p>
+                            <div className="text-2xl sm:text-3xl mr-3 sm:mr-4">💸</div>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-xs sm:text-sm font-medium text-gray-600">Total Gastos</p>
+                                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-600 truncate">{formatCurrency(metrics.totalExpenses)}</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-lg shadow p-6">
+                    <div className="bg-white rounded-lg shadow p-4 sm:p-6">
                         <div className="flex items-center">
-                            <div className="text-3xl mr-4">📈</div>
-                            <div>
-                                <p className="text-sm font-medium text-gray-600">Balance Total</p>
-                                <p className={`text-2xl font-bold ${metrics.balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            <div className="text-2xl sm:text-3xl mr-3 sm:mr-4">📈</div>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-xs sm:text-sm font-medium text-gray-600">Balance Total</p>
+                                <p className={`text-lg sm:text-xl lg:text-2xl font-bold truncate ${metrics.balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                                     {formatCurrency(metrics.balance)}
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-lg shadow p-6">
+                    <div className="bg-white rounded-lg shadow p-4 sm:p-6">
                         <div className="flex items-center">
-                            <div className="text-3xl mr-4">📋</div>
-                            <div>
-                                <p className="text-sm font-medium text-gray-600">Total Registros</p>
-                                <p className="text-2xl font-bold text-blue-600">{data.length}</p>
+                            <div className="text-2xl sm:text-3xl mr-3 sm:mr-4">📋</div>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-xs sm:text-sm font-medium text-gray-600">Total Registros</p>
+                                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600">{data.length}</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Métricas Mensuales y Anuales */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
                     {/* Este Mes */}
-                    <div className="bg-white rounded-lg shadow p-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">📅 Este Mes ({metrics.currentMonth})</h3>
-                        <div className="space-y-4">
+                    <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">📅 Este Mes ({metrics.currentMonth})</h3>
+                        <div className="space-y-3 sm:space-y-4">
                             <div className="flex justify-between">
                                 <span className="text-gray-600">Ingresos:</span>
                                 <span className="text-green-600 font-medium">{formatCurrency(metrics.monthlyIncome)}</span>
