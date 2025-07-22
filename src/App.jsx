@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import useGoogleSheets from './hooks/useGoogleSheets';
 import Navigation from './components/Navigation';
 import ExpensesPage from './pages/ExpensesPage';
@@ -77,19 +77,42 @@ function App() {
   // Si no está autenticado
   if (!isSignedIn) {
     return (
-      <div className=" min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
+      <div className=" min-h-screen bg-gradient-to-br from-green-500 to-purple-600 flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow-xl p-6 sm:p-8 max-w-2xs sm:max-w-md w-full">
           <div className="text-center">
-            <div className="text-5xl sm:text-6xl mb-4 sm:mb-6">💼</div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">ExpenseTracker</h1>
-            <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8 leading-relaxed">
-              Gestiona tus gastos e ingresos de forma inteligente conectando directamente con Google Sheets.
-            </p>
+            <div className="relative mb-6 sm:mb-8">
+              <div className="text-6xl sm:text-7xl mb-2 animate-bounce">💼</div>
+              <div className="absolute -top-2 -right-2 w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
+              <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-purple-400 rounded-full animate-ping"></div>
+            </div>
+
+            <div className="mb-6 sm:mb-8">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold bg-gradient-to-r from-green-600 to-purple-600 bg-clip-text text-transparent mb-2 sm:mb-3">
+                ExpenseTracker
+              </h1>
+              <div className="relative">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-700 mb-4 sm:mb-6 italic">
+                  <span className="relative">
+                    Fam. Huarsaya Berlanga
+                    <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-green-400 to-purple-400 rounded-full"></div>
+                  </span>
+                </h2>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-green-50 to-purple-50 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 border border-green-100">
+              <p className="text-sm sm:text-base lg:text-lg text-gray-700 leading-relaxed font-medium">
+                ✨ Gestiona tus gastos e ingresos de forma
+                <span className="text-green-600 font-semibold"> inteligente </span>
+                conectando directamente con
+                <span className="text-purple-600 font-semibold"> Google Sheets</span>.
+              </p>
+            </div>
 
             <button
               onClick={signIn}
               disabled={loading}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 sm:px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm sm:text-base"
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm sm:text-base shadow-lg hover:shadow-xl transform hover:scale-105 disabled:hover:scale-100"
             >
               {loading ? (
                 <>
@@ -109,26 +132,29 @@ function App() {
               )}
             </button>
 
-            <div className="mt-6 sm:mt-8 text-left">
-              <h3 className="font-semibold text-gray-800 mb-3 text-sm sm:text-base">✨ Características:</h3>
-              <ul className="text-xs sm:text-sm text-gray-600 space-y-2">
-                <li className="flex items-center">
-                  <span className="text-green-500 mr-2 flex-shrink-0">✓</span>
-                  <span>Registra gastos e ingresos</span>
-                </li>
-                <li className="flex items-center">
-                  <span className="text-green-500 mr-2 flex-shrink-0">✓</span>
-                  <span>Métricas y análisis detallados</span>
-                </li>
-                <li className="flex items-center">
-                  <span className="text-green-500 mr-2 flex-shrink-0">✓</span>
-                  <span>Sincronización con Google Sheets</span>
-                </li>
-                <li className="flex items-center">
-                  <span className="text-green-500 mr-2 flex-shrink-0">✓</span>
-                  <span>Filtros y categorización</span>
-                </li>
-              </ul>
+            <div className="mt-8 sm:mt-10 text-left">
+              <h3 className="font-bold text-gray-800 mb-4 text-base sm:text-lg flex items-center">
+                <span className="text-2xl mr-2">✨</span>
+                Características principales:
+              </h3>
+              <div className="grid grid-cols-1 gap-3">
+                <div className="flex items-center p-3 bg-green-50 rounded-lg border border-green-100 hover:bg-green-100 transition-colors">
+                  <span className="text-green-500 mr-3 text-lg flex-shrink-0">💰</span>
+                  <span className="text-sm sm:text-base text-gray-700 font-medium">Registra gastos e ingresos</span>
+                </div>
+                <div className="flex items-center p-3 bg-purple-50 rounded-lg border border-purple-100 hover:bg-purple-100 transition-colors">
+                  <span className="text-purple-500 mr-3 text-lg flex-shrink-0">📊</span>
+                  <span className="text-sm sm:text-base text-gray-700 font-medium">Métricas y análisis detallados</span>
+                </div>
+                <div className="flex items-center p-3 bg-blue-50 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors">
+                  <span className="text-blue-500 mr-3 text-lg flex-shrink-0">🔄</span>
+                  <span className="text-sm sm:text-base text-gray-700 font-medium">Sincronización con Google Sheets</span>
+                </div>
+                <div className="flex items-center p-3 bg-amber-50 rounded-lg border border-amber-100 hover:bg-amber-100 transition-colors">
+                  <span className="text-amber-500 mr-3 text-lg flex-shrink-0">🔍</span>
+                  <span className="text-sm sm:text-base text-gray-700 font-medium">Filtros y categorización</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -164,6 +190,11 @@ function App() {
           <Route
             path="/metrics"
             element={<MetricsPage data={data} />}
+          />
+          {/* Ruta catch-all para redirigir rutas no encontradas */}
+          <Route
+            path="*"
+            element={<Navigate to="/" replace />}
           />
         </Routes>
       </div>

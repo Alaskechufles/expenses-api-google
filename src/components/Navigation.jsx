@@ -28,7 +28,7 @@ const Navigation = ({ isSignedIn, onSignOut, loading }) => {
                                         key={item.name}
                                         to={item.href}
                                         className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors ${location.pathname === item.href
-                                            ? 'border-blue-500 text-gray-900'
+                                            ? 'border-green-500 text-gray-900'
                                             : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                                             }`}
                                     >
@@ -48,7 +48,7 @@ const Navigation = ({ isSignedIn, onSignOut, loading }) => {
                                 <button
                                     onClick={onSignOut}
                                     disabled={loading}
-                                    className="hidden sm:block bg-red-500 hover:bg-red-600 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors disabled:opacity-50"
+                                    className="hidden sm:block bg-purple-500 hover:bg-purple-600 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors disabled:opacity-50"
                                 >
                                     <span className="hidden lg:inline">🚪 Cerrar Sesión</span>
                                     <span className="lg:hidden">🚪 Salir</span>
@@ -57,7 +57,7 @@ const Navigation = ({ isSignedIn, onSignOut, loading }) => {
                                 {/* Mobile menu button */}
                                 <button
                                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                                    className="sm:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                                    className="sm:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500"
                                 >
                                     <span className="sr-only">Abrir menú principal</span>
                                     {isMobileMenuOpen ? (
@@ -86,7 +86,7 @@ const Navigation = ({ isSignedIn, onSignOut, loading }) => {
                                 to={item.href}
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors ${location.pathname === item.href
-                                    ? 'bg-blue-50 border-blue-500 text-blue-700'
+                                    ? 'bg-green-50 border-green-500 text-green-700'
                                     : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'
                                     }`}
                             >

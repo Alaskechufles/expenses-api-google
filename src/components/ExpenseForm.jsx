@@ -11,7 +11,7 @@ import {
     parseAmount
 } from '../constants/expenseConstants';
 
-const ExpenseForm = ({ onSubmit, initialData = null, onCancel }) => {
+const ExpenseForm = ({ onSubmit, initialData = null, onCancel, isModal = false }) => {
     const [formData, setFormData] = useState({
         'Date': formatDate(),
         'Description': '',
@@ -94,11 +94,22 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel }) => {
     const isEditing = initialData !== null;
     const categories = transactionType === TRANSACTION_TYPES.EXPENSE ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
 
-    return (
-        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
+    // Contenedor diferente si es modal o no
+    const containerClasses = isModal
+        ? "" // Sin estilos adicionales cuando es modal
+        : "bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6";
+
+    const titleElement = isModal
+        ? null // No mostrar título en modal (ya está en el header del modal)
+        : (
             <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">
                 {isEditing ? '✏️ Editar Registro' : '➕ Nuevo Registro'}
             </h3>
+        );
+
+    return (
+        <div className={containerClasses}>
+            {titleElement}
 
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 {/* Tipo de Transacción */}
@@ -111,7 +122,7 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel }) => {
                             type="button"
                             onClick={() => handleTransactionTypeChange(TRANSACTION_TYPES.EXPENSE)}
                             className={`px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-medium transition-colors text-sm sm:text-base ${transactionType === TRANSACTION_TYPES.EXPENSE
-                                ? 'bg-red-500 text-white'
+                                ? 'bg-purple-500 text-white'
                                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                 }`}
                         >
@@ -142,7 +153,7 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel }) => {
                             name="Date"
                             value={formData['Date']}
                             onChange={handleChange}
-                            className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                            className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm sm:text-base"
                             required
                         />
                     </div>
@@ -160,7 +171,7 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel }) => {
                             value={formData['How Much?'].toString().replace('-', '')}
                             onChange={handleChange}
                             placeholder="0.00"
-                            className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                            className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm sm:text-base"
                             required
                         />
                     </div>
@@ -178,7 +189,7 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel }) => {
                         value={formData['Description']}
                         onChange={handleChange}
                         placeholder="Ej: Compra en supermercado, Salario mensual..."
-                        className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                        className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm sm:text-base"
                         required
                     />
                 </div>
@@ -193,7 +204,7 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel }) => {
                         name="Category"
                         value={formData['Category']}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                        className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm sm:text-base"
                         required
                     >
                         <option value="">Selecciona una categoría</option>
@@ -214,7 +225,7 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel }) => {
                             name="What payment method?"
                             value={formData['What payment method?']}
                             onChange={handleChange}
-                            className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                            className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm sm:text-base"
                         >
                             <option value="">Selecciona método</option>
                             {PAYMENT_METHODS.map(method => (
@@ -233,7 +244,7 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel }) => {
                             name="payment manager"
                             value={formData['payment manager']}
                             onChange={handleChange}
-                            className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                            className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm sm:text-base"
                         >
                             <option value="">Selecciona gestor</option>
                             {PAYMENT_MANAGERS.map(manager => (
@@ -253,7 +264,7 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel }) => {
                         name="who recorded"
                         value={formData['who recorded']}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                        className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm sm:text-base"
                     >
                         <option value="">Selecciona usuario</option>
                         {RECORDERS.map(recorder => (
@@ -267,7 +278,7 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel }) => {
                     <button
                         type="submit"
                         className={`flex-1 px-4 sm:px-6 py-3 sm:py-3 rounded-lg font-medium text-white transition-colors text-sm sm:text-base ${transactionType === TRANSACTION_TYPES.EXPENSE
-                            ? 'bg-red-500 hover:bg-red-600'
+                            ? 'bg-purple-500 hover:bg-purple-600'
                             : 'bg-green-500 hover:bg-green-600'
                             }`}
                     >

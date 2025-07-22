@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import ExpenseForm from '../components/ExpenseForm';
+import ExpenseFormModal from '../components/ExpenseFormModal';
 import ExpenseTable from '../components/ExpenseTable';
 
 const ExpensesPage = ({
@@ -28,9 +28,12 @@ const ExpensesPage = ({
             if (success) {
                 setShowForm(false);
                 setEditingRow(null);
+                return true; // Indicar éxito para cerrar el modal
             }
+            return false;
         } catch (err) {
             console.error('Error en formulario:', err);
+            return false;
         }
     };
 
@@ -66,14 +69,14 @@ const ExpensesPage = ({
                             <button
                                 onClick={() => setShowForm(true)}
                                 disabled={loading || headers.length === 0}
-                                className="bg-blue-500 hover:bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                                className="bg-green-500 hover:bg-green-600 hover:scale-110 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                             >
                                 ➕ Nuevo Registro
                             </button>
                             <button
                                 onClick={loadData}
                                 disabled={loading}
-                                className="bg-gray-500 hover:bg-gray-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-colors disabled:opacity-50 text-sm sm:text-base"
+                                className="bg-purple-500 hover:bg-purple-600 hover:scale-110 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-all duration-200 disabled:opacity-50 text-sm sm:text-base"
                             >
                                 🔄 Recargar
                             </button>
@@ -104,10 +107,11 @@ const ExpensesPage = ({
                 )}
 
                 {showForm && (
-                    <ExpenseForm
+                    <ExpenseFormModal
+                        isOpen={showForm}
+                        onClose={handleCancel}
                         onSubmit={handleFormSubmit}
                         initialData={editingRow?.data}
-                        onCancel={handleCancel}
                     />
                 )}
 
