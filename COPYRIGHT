@@ -1,0 +1,93 @@
+/\*\*
+
+- Copyright (c) 2025 Alaskechufles
+-
+- Este archivo contiene información sobre los derechos de autor y licencia
+- para el proyecto Expense Tracker.
+-
+- @file COPYRIGHT
+- @description Información de derechos de autor del proyecto
+- @author Alaskechufles
+- @version 1.0.0
+- @since 2025-07-22
+- @license MIT
+  \*/
+
+# Derechos de Autor - Expense Tracker
+
+## 📋 Información General
+
+**Proyecto:** Expense Tracker - Gestor de Gastos e Ingresos
+**Autor:** Alaskechufles
+**Año:** 2025
+**Licencia:** MIT License
+
+## 🏢 Titular de los Derechos
+
+Copyright (c) 2025 Alaskechufles
+
+## 📄 Descripción del Proyecto
+
+Sistema de gestión de gastos e ingresos personal integrado con Google Sheets API.
+Aplicación web desarrollada en React 19 con Vite, que permite:
+
+- ✅ Gestión completa de gastos e ingresos (CRUD)
+- ✅ Integración con Google Sheets como base de datos
+- ✅ Autenticación OAuth2 con Google Identity Services
+- ✅ Interfaz responsive con Tailwind CSS
+- ✅ Sistema de filtrado y paginación avanzado
+- ✅ Métricas y análisis financiero
+- ✅ Modal system con confirmaciones elegantes
+
+## 🔧 Tecnologías Utilizadas
+
+- **Frontend:** React 19, Vite, Tailwind CSS
+- **Backend:** Google Sheets API v4
+- **Autenticación:** Google Identity Services (OAuth2)
+- **Routing:** React Router DOM
+- **Build Tool:** Vite con SWC
+- **Estilo:** Tailwind CSS con animaciones personalizadas
+
+## 📜 Términos de Licencia
+
+Este software se distribuye bajo la Licencia MIT. Consulte el archivo LICENSE
+para obtener más información sobre los términos y condiciones.
+
+### Resumen de Permisos:
+
+- ✅ Uso comercial
+- ✅ Modificación
+- ✅ Distribución
+- ✅ Uso privado
+
+### Limitaciones:
+
+- ❌ Responsabilidad
+- ❌ Garantía
+
+### Condiciones:
+
+- 📋 Incluir aviso de licencia y copyright
+- 📋 Incluir aviso de copyright en copias sustanciales
+
+## 📞 Contacto
+
+Para cuestiones relacionadas con derechos de autor, licencias o colaboraciones:
+
+**Desarrollador:** Alaskechufles
+**Proyecto:** expenses-api-google
+**Plataforma:** GitHub
+
+## 🕐 Historial de Versiones
+
+- **v1.0.0** (2025-07-22): Versión inicial con funcionalidad completa
+  - Sistema CRUD completo
+  - Integración Google Sheets
+  - Interfaz responsive
+  - Sistema de modales
+  - Métricas financieras
+
+---
+
+**Nota:** Este proyecto fue desarrollado como una herramienta personal de gestión
+financiera y está disponible bajo licencia MIT para beneficio de la comunidad.

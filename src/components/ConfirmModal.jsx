@@ -1,6 +1,50 @@
+/**
+ * Copyright (c) 2025 Alaskechufles
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * 
+ * @file ConfirmModal.jsx
+ * @description Modal de confirmación reutilizable con visualización de datos.
+ *              Especializado para confirmar eliminación de registros con detalles.
+ * @author Alaskechufles
+ * @version 1.0.0
+ * @since 2025-07-22
+ * @license MIT
+ */
+
 import Modal from './Modal';
 import { formatCurrency, parseAmount } from '../constants/expenseConstants';
 
+/**
+ * Modal de confirmación para acciones críticas
+ * @param {Object} props - Props del componente
+ * @param {boolean} props.isOpen - Estado de visibilidad del modal
+ * @param {Function} props.onClose - Función para cerrar el modal
+ * @param {Function} props.onConfirm - Función a ejecutar al confirmar
+ * @param {string} [props.title="Confirmar Acción"] - Título del modal
+ * @param {string} [props.message="¿Estás seguro de que deseas continuar?"] - Mensaje de confirmación
+ * @param {string} [props.confirmText="Confirmar"] - Texto del botón de confirmación
+ * @param {string} [props.cancelText="Cancelar"] - Texto del botón de cancelación
+ * @param {string} [props.confirmButtonClass] - Clases CSS para el botón de confirmación
+ * @param {Object|null} [props.data=null] - Datos del registro a mostrar
+ * @returns {JSX.Element} Modal de confirmación
+ */
 const ConfirmModal = ({
     isOpen,
     onClose,

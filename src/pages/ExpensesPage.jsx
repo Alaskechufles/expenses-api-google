@@ -1,7 +1,50 @@
+/**
+ * Copyright (c) 2025 Alaskechufles
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * 
+ * @file ExpensesPage.jsx
+ * @description Página principal para gestión de gastos e ingresos.
+ *              Coordina formularios, tabla de datos y operaciones CRUD.
+ * @author Alaskechufles
+ * @version 1.0.0
+ * @since 2025-07-22
+ * @license MIT
+ */
+
 import { useState } from 'react';
 import ExpenseFormModal from '../components/ExpenseFormModal';
 import ExpenseTable from '../components/ExpenseTable';
 
+/**
+ * Página principal de gestión de gastos e ingresos
+ * @param {Object} props - Props del componente
+ * @param {Array} props.data - Datos de gastos e ingresos
+ * @param {Array} props.headers - Encabezados de las columnas
+ * @param {boolean} props.loading - Estado de carga
+ * @param {string|null} props.error - Mensaje de error si existe
+ * @param {Function} props.createRow - Función para crear nuevo registro
+ * @param {Function} props.updateRow - Función para actualizar registro
+ * @param {Function} props.deleteRow - Función para eliminar registro
+ * @param {Function} props.loadData - Función para recargar datos
+ * @returns {JSX.Element} Página de gestión de gastos
+ */
 const ExpensesPage = ({
     data,
     headers,

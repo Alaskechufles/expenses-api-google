@@ -1,9 +1,43 @@
+/**
+ * Copyright (c) 2025 Alaskechufles
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * 
+ * @file App.jsx
+ * @description Componente principal de la aplicación de gestión de gastos e ingresos.
+ *              Maneja la autenticación con Google, enrutamiento y configuración general.
+ * @author Alaskechufles
+ * @version 1.0.0
+ * @since 2025-07-22
+ * @license MIT
+ */
+
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import useGoogleSheets from './hooks/useGoogleSheets';
 import Navigation from './components/Navigation';
 import ExpensesPage from './pages/ExpensesPage';
 import MetricsPage from './components/MetricsPage';
 
+/**
+ * Componente principal de la aplicación
+ * @returns {JSX.Element} La aplicación completa con enrutamiento y autenticación
+ */
 function App() {
   // Configuración de Google Sheets desde variables de entorno
   const config = {

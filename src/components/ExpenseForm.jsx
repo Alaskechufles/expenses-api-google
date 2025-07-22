@@ -1,3 +1,33 @@
+/**
+ * Copyright (c) 2025 Alaskechufles
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * 
+ * @file ExpenseForm.jsx
+ * @description Formulario principal para crear y editar registros de gastos e ingresos.
+ *              Incluye validación, manejo de errores, tipos de transacción y integración con modales.
+ * @author Alaskechufles
+ * @version 1.0.0
+ * @since 2025-07-22
+ * @license MIT
+ */
+
 import { useState, useEffect } from 'react';
 import {
     TRANSACTION_TYPES,
@@ -11,7 +41,33 @@ import {
     parseAmount
 } from '../constants/expenseConstants';
 
+/**
+ * Componente de formulario para crear y editar registros de gastos e ingresos.
+ * 
+ * @component
+ * @param {Object} props - Las propiedades del componente
+ * @param {Function} props.onSubmit - Función callback que se ejecuta al enviar el formulario
+ * @param {Object|null} props.initialData - Datos iniciales para editar un registro existente
+ * @param {Function} [props.onCancel] - Función callback para cancelar la operación (opcional)
+ * @param {boolean} [props.isModal=false] - Indica si el formulario se muestra dentro de un modal
+ * 
+ * @returns {JSX.Element} El componente de formulario renderizado
+ * 
+ * @example
+ * // Crear nuevo registro
+ * <ExpenseForm onSubmit={handleCreateExpense} />
+ * 
+ * @example
+ * // Editar registro existente
+ * <ExpenseForm 
+ *   onSubmit={handleUpdateExpense}
+ *   initialData={expenseData}
+ *   onCancel={handleCancel}
+ *   isModal={true}
+ * />
+ */
 const ExpenseForm = ({ onSubmit, initialData = null, onCancel, isModal = false }) => {
+    // Estado para almacenar los datos del formulario
     const [formData, setFormData] = useState({
         'Date': formatDate(),
         'Description': '',
@@ -22,8 +78,15 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel, isModal = false }
         'who recorded': ''
     });
 
+    // Estado para el tipo de transacción (Gasto/Ingreso)
     const [transactionType, setTransactionType] = useState(TRANSACTION_TYPES.EXPENSE);
+
+    // Estado para manejar errores de validación
     const [errors, setErrors] = useState([]);
+
+    /**
+     * Efecto para cargar datos iniciales cuando se edita un registro existente
+     */
 
     useEffect(() => {
         if (initialData) {
@@ -50,6 +113,10 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel, isModal = false }
         }
     }, [initialData]);
 
+    /**
+     * Maneja los cambios en los campos del formulario
+     * @param {Event} e - Evento de cambio del input
+     */
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -62,6 +129,10 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel, isModal = false }
         }
     };
 
+    /**
+     * Maneja el cambio de tipo de transacción (Gasto/Ingreso)
+     * @param {string} type - Tipo de transacción seleccionado
+     */
     const handleTransactionTypeChange = (type) => {
         setTransactionType(type);
         // Limpiar categoría cuando cambia el tipo
@@ -75,6 +146,10 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel, isModal = false }
         }
     };
 
+    /**
+     * Maneja el envío del formulario, incluyendo validación de datos
+     * @param {Event} e - Evento de envío del formulario
+     */
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -111,6 +186,7 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel, isModal = false }
         onSubmit(finalData);
     };
 
+    // Variables derivadas para la renderización
     const isEditing = initialData !== null;
     const categories = transactionType === TRANSACTION_TYPES.EXPENSE ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
 

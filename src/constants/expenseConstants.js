@@ -1,10 +1,46 @@
-// Tipos de transacciones
+/**
+ * Copyright (c) 2025 Alaskechufles
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ * @file expenseConstants.js
+ * @description Constantes y utilidades para la gestión de gastos e ingresos.
+ *              Define categorías, métodos de pago, gestores y funciones de formato.
+ * @author Alaskechufles
+ * @version 1.0.0
+ * @since 2025-07-22
+ * @license MIT
+ */
+
+/**
+ * Tipos de transacciones disponibles en la aplicación
+ * @constant {Object}
+ */
 export const TRANSACTION_TYPES = {
   EXPENSE: "Gasto",
   INCOME: "Ingreso",
 };
 
-// Categorías de gastos
+/**
+ * Categorías disponibles para gastos
+ * @constant {string[]}
+ */
 export const EXPENSE_CATEGORIES = [
   "Donaciones",
   "Transporte",
@@ -23,7 +59,10 @@ export const EXPENSE_CATEGORIES = [
   "Otros",
 ];
 
-// Categorías de ingresos
+/**
+ * Categorías disponibles para ingresos
+ * @constant {string[]}
+ */
 export const INCOME_CATEGORIES = [
   "Salario",
   "Freelance",
@@ -34,7 +73,10 @@ export const INCOME_CATEGORIES = [
   "Otros",
 ];
 
-// Métodos de pago
+/**
+ * Métodos de pago disponibles en la aplicación
+ * @constant {string[]}
+ */
 export const PAYMENT_METHODS = [
   "Efectivo",
   "Sigrid Interbank",
@@ -47,7 +89,10 @@ export const PAYMENT_METHODS = [
   "Diego BBVA dolares débito",
 ];
 
-// Gestores de pago
+/**
+ * Gestores de pago disponibles
+ * @constant {string[]}
+ */
 export const PAYMENT_MANAGERS = [
   "Fam Huarsaya Berlanga",
   "Mamá de Sigrid",
@@ -55,10 +100,16 @@ export const PAYMENT_MANAGERS = [
   "Otros",
 ];
 
-// Usuarios que pueden registrar
+/**
+ * Usuarios que pueden registrar transacciones
+ * @constant {string[]}
+ */
 export const RECORDERS = ["Sigrid", "Diego"];
 
-// Headers de la hoja de cálculo (deben coincidir exactamente con tu Google Sheet)
+/**
+ * Headers de la hoja de cálculo (deben coincidir exactamente con Google Sheets)
+ * @constant {string[]}
+ */
 export const SHEET_HEADERS = [
   "Date",
   "Description",
@@ -69,13 +120,21 @@ export const SHEET_HEADERS = [
   "who recorded",
 ];
 
-// Función para formatear fecha
+/**
+ * Formatea una fecha para el formulario
+ * @param {string|Date} [date] - Fecha a formatear
+ * @returns {string} Fecha en formato YYYY-MM-DD
+ */
 export const formatDate = (date) => {
   if (!date) return new Date().toISOString().split("T")[0];
   return new Date(date).toISOString().split("T")[0];
 };
 
-// Función para formatear moneda
+/**
+ * Formatea un número como moneda peruana (PEN)
+ * @param {number} amount - Cantidad a formatear
+ * @returns {string} Cantidad formateada con símbolo de moneda
+ */
 export const formatCurrency = (amount) => {
   return new Intl.NumberFormat("es-PE", {
     style: "currency",
@@ -83,7 +142,11 @@ export const formatCurrency = (amount) => {
   }).format(amount);
 };
 
-// Función para parsear cantidad
+/**
+ * Parsea un valor de texto a número para montos
+ * @param {string|number} value - Valor a parsear
+ * @returns {number} Valor numérico parseado o 0 si no es válido
+ */
 export const parseAmount = (value) => {
   if (!value) return 0;
   // Remover símbolos de moneda y espacios, reemplazar comas por puntos
