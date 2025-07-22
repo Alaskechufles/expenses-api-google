@@ -64,13 +64,13 @@ export const EXPENSE_CATEGORIES = [
  * @constant {string[]}
  */
 export const INCOME_CATEGORIES = [
-  "Salario",
-  "Freelance",
-  "Inversiones",
-  "Ventas",
-  "Bonos",
-  "Regalos",
-  "Otros",
+  "Sigrid Mendel",
+  "Sigrid Anglo",
+  "Sigrid otro",
+  "Diego Pathway",
+  "Diego Funval",
+  "Diego Anglo",
+  "Diego otro",
 ];
 
 /**
