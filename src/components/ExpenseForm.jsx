@@ -38,7 +38,8 @@ import {
     RECORDERS,
     SHEET_HEADERS,
     formatDate,
-    parseAmount
+    parseAmount,
+    formatInputAmount
 } from '../constants/expenseConstants';
 
 /**
@@ -92,13 +93,14 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel, isModal = false }
         if (initialData) {
             // Para el monto, asegurémonos de mostrar solo el valor absoluto
             const rawAmount = initialData['How Much?'] || '';
-            const absoluteAmount = Math.abs(parseAmount(rawAmount)).toString();
+            const parsedAmount = parseAmount(rawAmount);
+            const absoluteAmount = Math.abs(parsedAmount);
 
             setFormData({
                 'Date': formatDate(initialData['Date']),
                 'Description': initialData['Description'] || '',
                 'Category': initialData['Category'] || '',
-                'How Much?': absoluteAmount,
+                'How Much?': absoluteAmount > 0 ? absoluteAmount.toString() : '',
                 'What payment method?': initialData['What payment method?'] || '',
                 'payment manager': initialData['payment manager'] || '',
                 'who recorded': initialData['who recorded'] || ''
@@ -288,7 +290,7 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel, isModal = false }
                             min="0.01"
                             id="How Much?"
                             name="How Much?"
-                            value={Math.abs(parseFloat(formData['How Much?']) || 0) || ''}
+                            value={formatInputAmount(formData['How Much?'])}
                             onChange={handleChange}
                             placeholder="0.00"
                             className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm sm:text-base"

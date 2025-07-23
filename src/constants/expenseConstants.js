@@ -149,10 +149,51 @@ export const formatCurrency = (amount) => {
  */
 export const parseAmount = (value) => {
   if (!value) return 0;
-  // Remover símbolos de moneda y espacios, reemplazar comas por puntos
-  const cleaned = value
-    .toString()
-    .replace(/[S/.$,\s]/g, "")
-    .replace(",", ".");
-  return parseFloat(cleaned) || 0;
+
+  // Convertir a string para procesamiento
+  let stringValue = value.toString().trim();
+
+  // Si ya es un número válido, devolverlo
+  if (!isNaN(stringValue) && !isNaN(parseFloat(stringValue))) {
+    return parseFloat(stringValue);
+  }
+
+  // Remover símbolos de moneda (S/, $) y espacios, pero preservar puntos y comas para decimales
+  let cleaned = stringValue.replace(/[S/$\s]/g, "");
+
+  // Detectar si usa coma como separador decimal (formato europeo/latinoamericano)
+  // Si hay una coma después del último punto, o solo hay coma, es separador decimal
+  const lastDotIndex = cleaned.lastIndexOf(".");
+  const lastCommaIndex = cleaned.lastIndexOf(",");
+
+  if (lastCommaIndex > lastDotIndex) {
+    // La coma está después del punto o es el único separador decimal
+    // Reemplazar todas las comas anteriores (separadores de miles) por nada
+    // y la última coma por punto decimal
+    cleaned = cleaned.replace(/,(?=.*,)/g, "").replace(",", ".");
+  } else if (lastDotIndex > lastCommaIndex && lastCommaIndex !== -1) {
+    // El punto está después de la coma, entonces las comas son separadores de miles
+    cleaned = cleaned.replace(/,/g, "");
+  }
+
+  // Parsear el resultado final
+  const result = parseFloat(cleaned);
+
+  // Verificar que es un número válido
+  return isNaN(result) ? 0 : result;
+};
+
+/**
+ * Formatea un número para mostrar en el input del formulario
+ * @param {string|number} value - Valor a formatear
+ * @returns {string} Valor formateado para el input
+ */
+export const formatInputAmount = (value) => {
+  if (!value || value === "0" || value === 0) return "";
+
+  const numericValue = parseAmount(value);
+  if (numericValue === 0) return "";
+
+  // Formatear con máximo 2 decimales, eliminando ceros innecesarios
+  return numericValue.toFixed(2).replace(/\.?0+$/, "");
 };
