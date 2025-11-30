@@ -29,7 +29,9 @@
  */
 
 import { useMemo } from 'react';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { formatCurrency, parseAmount, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../constants/expenseConstants';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 
 /**
  * Página de métricas y análisis financiero
@@ -38,6 +40,10 @@ import { formatCurrency, parseAmount, EXPENSE_CATEGORIES, INCOME_CATEGORIES } fr
  * @returns {JSX.Element} Página con métricas y estadísticas
  */
 const MetricsPage = ({ data }) => {
+    // Colores para gráficos
+    const EXPENSE_COLORS = ['#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#d946ef', '#f43f5e'];
+    const INCOME_COLORS = ['#10b981', '#059669', '#047857', '#065f46', '#064e3b', '#6ee7b7', '#34d399', '#10b981', '#059669', '#047857'];
+    
     const metrics = useMemo(() => {
         if (!data || data.length === 0) return null;
 
@@ -108,6 +114,40 @@ const MetricsPage = ({ data }) => {
             .sort(([, a], [, b]) => b - a)
             .slice(0, 5);
 
+        // Datos para gráficos
+        const expensesPieData = topExpenseCategories.map(([category, amount]) => ({
+            name: category,
+            value: amount,
+            percentage: ((amount / totals.totalExpenses) * 100).toFixed(1)
+        }));
+
+        const incomesPieData = topIncomeCategories.map(([category, amount]) => ({
+            name: category,
+            value: amount,
+            percentage: ((amount / totals.totalIncome) * 100).toFixed(1)
+        }));
+
+        const paymentMethodsData = topPaymentMethods.map(([method, amount]) => ({
+            method: method,
+            amount: amount
+        }));
+
+        // Datos para gráfico de comparación mensual/anual
+        const comparisonData = [
+            {
+                period: 'Este Mes',
+                ingresos: totals.monthlyIncome,
+                gastos: totals.monthlyExpenses,
+                balance: totals.monthlyIncome - totals.monthlyExpenses
+            },
+            {
+                period: 'Este Año',
+                ingresos: totals.yearlyIncome,
+                gastos: totals.yearlyExpenses,
+                balance: totals.yearlyIncome - totals.yearlyExpenses
+            }
+        ];
+
         return {
             ...totals,
             balance: totals.totalIncome - totals.totalExpenses,
@@ -117,7 +157,11 @@ const MetricsPage = ({ data }) => {
             topIncomeCategories,
             topPaymentMethods,
             currentMonth,
-            currentYear
+            currentYear,
+            expensesPieData,
+            incomesPieData,
+            paymentMethodsData,
+            comparisonData
         };
     }, [data]);
 
@@ -237,7 +281,129 @@ const MetricsPage = ({ data }) => {
                     </div>
                 </div>
 
-                {/* Top Categorías */}
+                {/* Gráficos de Análisis */}
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+                    {/* Gráfico de Comparación Ingresos vs Gastos */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg">📊 Comparación Ingresos vs Gastos</CardTitle>
+                            <CardDescription>
+                                Comparación mensual y anual de ingresos, gastos y balance
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-80">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={metrics.comparisonData}>
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="period" />
+                                        <YAxis tickFormatter={(value) => formatCurrency(value)} />
+                                        <Tooltip 
+                                            formatter={(value) => formatCurrency(value)}
+                                            labelStyle={{ color: '#374151' }}
+                                        />
+                                        <Legend />
+                                        <Bar dataKey="ingresos" fill="#10b981" name="Ingresos" />
+                                        <Bar dataKey="gastos" fill="#ef4444" name="Gastos" />
+                                        <Bar dataKey="balance" fill="#3b82f6" name="Balance" />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Gráfico de Distribución de Gastos */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg">🥧 Distribución de Gastos</CardTitle>
+                            <CardDescription>
+                                Porcentaje de gastos por categoría
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-80">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie
+                                            data={metrics.expensesPieData}
+                                            cx="50%"
+                                            cy="50%"
+                                            labelLine={false}
+                                            label={({ name, percentage }) => `${name}: ${percentage}%`}
+                                            outerRadius={80}
+                                            fill="#8884d8"
+                                            dataKey="value"
+                                        >
+                                            {metrics.expensesPieData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={EXPENSE_COLORS[index % EXPENSE_COLORS.length]} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip formatter={(value) => formatCurrency(value)} />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Gráficos adicionales */}
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+                    {/* Distribución de Ingresos */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg">💰 Distribución de Ingresos</CardTitle>
+                            <CardDescription>
+                                Porcentaje de ingresos por categoría
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-80">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie
+                                            data={metrics.incomesPieData}
+                                            cx="50%"
+                                            cy="50%"
+                                            labelLine={false}
+                                            label={({ name, percentage }) => `${name}: ${percentage}%`}
+                                            outerRadius={80}
+                                            fill="#10b981"
+                                            dataKey="value"
+                                        >
+                                            {metrics.incomesPieData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={INCOME_COLORS[index % INCOME_COLORS.length]} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip formatter={(value) => formatCurrency(value)} />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Métodos de Pago */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg">💳 Uso por Método de Pago</CardTitle>
+                            <CardDescription>
+                                Comparación de uso de diferentes métodos de pago
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-80">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={metrics.paymentMethodsData} layout="horizontal">
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis type="number" tickFormatter={(value) => formatCurrency(value)} />
+                                        <YAxis dataKey="method" type="category" width={100} />
+                                        <Tooltip formatter={(value) => formatCurrency(value)} />
+                                        <Bar dataKey="amount" fill="#3b82f6" />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>                {/* Top Categorías */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     {/* Top Gastos por Categoría */}
                     <div className="bg-white rounded-lg shadow p-6">
