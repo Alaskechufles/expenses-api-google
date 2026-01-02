@@ -32,6 +32,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import useGoogleSheets from './hooks/useGoogleSheets';
 import Navigation from './components/Navigation';
 import ExpensesPage from './pages/ExpensesPage';
+import BudgetPage from './pages/BudgetPage';
 import MetricsPage from './components/MetricsPage';
 
 /**
@@ -220,6 +221,10 @@ function App() {
                 loadData={loadData}
               />
             }
+          />
+          <Route
+            path="/budget"
+            element={<BudgetPage expenses={data} />}
           />
           <Route
             path="/metrics"

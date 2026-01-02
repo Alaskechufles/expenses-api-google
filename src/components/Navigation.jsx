@@ -45,6 +45,7 @@ const Navigation = ({ isSignedIn, onSignOut, loading }) => {
 
     const navigation = [
         { name: 'Gastos e Ingresos', href: '/', icon: '💰' },
+        { name: 'Presupuestos', href: '/budget', icon: '📋' },
         { name: 'Métricas', href: '/metrics', icon: '📊' },
     ];
 
