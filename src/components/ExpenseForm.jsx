@@ -34,7 +34,6 @@ import {
     EXPENSE_CATEGORIES,
     INCOME_CATEGORIES,
     PAYMENT_METHODS,
-    PAYMENT_MANAGERS,
     RECORDERS,
     SHEET_HEADERS,
     formatDate,
@@ -75,7 +74,6 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel, isModal = false }
         'Category': '',
         'How Much?': '',
         'What payment method?': '',
-        'payment manager': '',
         'who recorded': ''
     });
 
@@ -102,7 +100,7 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel, isModal = false }
                 'Category': initialData['Category'] || '',
                 'How Much?': absoluteAmount > 0 ? absoluteAmount.toString() : '',
                 'What payment method?': initialData['What payment method?'] || '',
-                'payment manager': initialData['payment manager'] || '',
+
                 'who recorded': initialData['who recorded'] || ''
             });
 
@@ -352,25 +350,6 @@ const ExpenseForm = ({ onSubmit, initialData = null, onCancel, isModal = false }
                             <option value="">Selecciona método</option>
                             {PAYMENT_METHODS.map(method => (
                                 <option key={method} value={method}>{method}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Gestor de Pago */}
-                    <div>
-                        <label htmlFor="payment manager" className="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
-                            🏦 Gestor de Pago
-                        </label>
-                        <select
-                            id="payment manager"
-                            name="payment manager"
-                            value={formData['payment manager']}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm sm:text-base"
-                        >
-                            <option value="">Selecciona gestor</option>
-                            {PAYMENT_MANAGERS.map(manager => (
-                                <option key={manager} value={manager}>{manager}</option>
                             ))}
                         </select>
                     </div>

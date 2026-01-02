@@ -42,21 +42,18 @@ export const TRANSACTION_TYPES = {
  * @constant {string[]}
  */
 export const EXPENSE_CATEGORIES = [
-  "Donaciones",
-  "Transporte",
-  "Entretenimiento",
-  "Renta",
+  "Diezmo",
+  "Ayuno",
   "Ahorros",
-  "Comida",
-  "Educación",
-  "Salud",
-  "Artículos del hogar",
+  "Alquiler",
   "Servicios",
-  "Artículos de trabajo",
-  "Regalos",
-  "Prestamos",
-  "Deudas",
-  "Otros",
+  "Comida",
+  "Salud",
+  "Transporte",
+  "Artículos de Hogar",
+  "Gatos",
+  "Gastos personales",
+  "FE Extrafamiliar",
 ];
 
 /**
@@ -64,14 +61,80 @@ export const EXPENSE_CATEGORIES = [
  * @constant {string[]}
  */
 export const INCOME_CATEGORIES = [
-  "Sigrid Mendel",
-  "Sigrid Anglo",
-  "Sigrid otro",
-  "Diego Pathway",
-  "Diego Funval",
-  "Diego Anglo",
-  "Diego otro",
+  "Pathway",
+  "Funval",
+  "Mendel",
+  "Ingresos Extra",
+  "Saldo Anterior",
 ];
+
+/**
+ * Tipos de categorías de presupuesto
+ * @constant {Object}
+ */
+export const BUDGET_TYPES = {
+  V: "Variable",
+  IV: "Ingreso Variable",
+  IF: "Ingreso Fijo",
+  GV: "Gasto Variable",
+  GF: "Gasto Fijo",
+};
+
+/**
+ * Configuración de categorías de presupuesto con sus tipos
+ * @constant {Object}
+ */
+export const BUDGET_CATEGORIES = {
+  // Ingresos
+  "Saldo Anterior": { type: "V", isIncome: true, isEditable: true },
+  "Pathway": { type: "IV", isIncome: true, isEditable: true },
+  "Funval": { type: "IF", isIncome: true, isEditable: true },
+  "Mendel": { type: "IV", isIncome: true, isEditable: true },
+  "Ingresos Extra": { type: "IV", isIncome: true, isEditable: true },
+  
+  // Gastos - Calculados automáticamente
+  "Diezmo": { type: "GV", isIncome: false, isEditable: false, isCalculated: true },
+  "Ahorros": { type: "GV", isIncome: false, isEditable: false, isCalculated: true },
+  
+  // Gastos - Editables
+  "Ayuno": { type: "GF", isIncome: false, isEditable: true },
+  "Alquiler": { type: "GF", isIncome: false, isEditable: true },
+  "Servicios": { type: "GV", isIncome: false, isEditable: true },
+  "Comida": { type: "GV", isIncome: false, isEditable: true },
+  "Salud": { type: "GV", isIncome: false, isEditable: true },
+  "Transporte": { type: "GV", isIncome: false, isEditable: true },
+  "Artículos de Hogar": { type: "GV", isIncome: false, isEditable: true },
+  "Gatos": { type: "GV", isIncome: false, isEditable: true },
+  "Gastos personales": { type: "GV", isIncome: false, isEditable: true },
+  "FE Extrafamiliar": { type: "GV", isIncome: false, isEditable: true },
+};
+
+/**
+ * Calcula el Diezmo basado en los ingresos reales
+ * @param {Object} realAmounts - Montos reales de ingresos
+ * @returns {number} Diezmo calculado (10% de ingresos totales)
+ */
+export const calculateDiezmo = (realAmounts) => {
+  const pathway = parseAmount(realAmounts.Pathway || 0);
+  const funval = parseAmount(realAmounts.Funval || 0);
+  const mendel = parseAmount(realAmounts.Mendel || 0);
+  const ingresosExtra = parseAmount(realAmounts["Ingresos Extra"] || 0);
+  
+  return (pathway + funval + mendel + ingresosExtra) * 0.10;
+};
+
+/**
+ * Calcula los Ahorros basados en los ingresos reales
+ * @param {Object} realAmounts - Montos reales de ingresos
+ * @returns {number} Ahorros calculados (100% Pathway + 5% Funval + 5% Mendel)
+ */
+export const calculateAhorros = (realAmounts) => {
+  const pathway = parseAmount(realAmounts.Pathway || 0);
+  const funval = parseAmount(realAmounts.Funval || 0);
+  const mendel = parseAmount(realAmounts.Mendel || 0);
+  
+  return pathway + (funval * 0.05) + (mendel * 0.05);
+};
 
 /**
  * Métodos de pago disponibles en la aplicación
@@ -79,25 +142,8 @@ export const INCOME_CATEGORIES = [
  */
 export const PAYMENT_METHODS = [
   "Efectivo",
-  "Sigrid Interbank",
-  "Sigrid OH",
-  "Sigrid BCP Amex",
-  "Sigrid BCP Visa",
-  "Sigrid BBVA",
   "Sigrid Yape/plin/débito",
   "Diego Yape/plin/débito",
-  "Diego BBVA dolares débito",
-];
-
-/**
- * Gestores de pago disponibles
- * @constant {string[]}
- */
-export const PAYMENT_MANAGERS = [
-  "Fam Huarsaya Berlanga",
-  "Mamá de Sigrid",
-  "Fam de Diego",
-  "Otros",
 ];
 
 /**
@@ -116,7 +162,6 @@ export const SHEET_HEADERS = [
   "Category",
   "How Much?",
   "What payment method?",
-  "payment manager",
   "who recorded",
 ];
 
