@@ -129,7 +129,7 @@ const ExpenseTable = ({ data, onEdit, onDelete, loading }) => {
         return acc;
     }, { income: 0, expenses: 0 });
 
-    const searchableColumns = ['Description', 'Category', 'What payment method?', 'payment manager', 'who recorded'];
+    const searchableColumns = ['Description', 'Category', 'What payment method?', 'who recorded'];
     const allCategories = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES].sort();
 
     if (loading) {
@@ -270,7 +270,6 @@ const ExpenseTable = ({ data, onEdit, onDelete, loading }) => {
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Método</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gestor</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                         </tr>
@@ -305,9 +304,6 @@ const ExpenseTable = ({ data, onEdit, onDelete, loading }) => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {row.data['What payment method?']}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {row.data['payment manager']}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {row.data['who recorded']}

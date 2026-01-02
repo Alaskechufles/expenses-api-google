@@ -42,21 +42,18 @@ export const TRANSACTION_TYPES = {
  * @constant {string[]}
  */
 export const EXPENSE_CATEGORIES = [
-  "Donaciones",
-  "Transporte",
-  "Entretenimiento",
-  "Renta",
+  "Diezmo",
+  "Ayuno",
   "Ahorros",
-  "Comida",
-  "Educación",
-  "Salud",
-  "Artículos del hogar",
+  "Alquiler",
   "Servicios",
-  "Artículos de trabajo",
-  "Regalos",
-  "Prestamos",
-  "Deudas",
-  "Otros",
+  "Comida",
+  "Salud",
+  "Transporte",
+  "Artículos de Hogar",
+  "Gatos",
+  "Gastos personales",
+  "FE Extrafamiliar",
 ];
 
 /**
@@ -64,13 +61,10 @@ export const EXPENSE_CATEGORIES = [
  * @constant {string[]}
  */
 export const INCOME_CATEGORIES = [
-  "Sigrid Mendel",
-  "Sigrid Anglo",
-  "Sigrid otro",
-  "Diego Pathway",
-  "Diego Funval",
-  "Diego Anglo",
-  "Diego otro",
+  "Pathway",
+  "Funval",
+  "Mendel",
+  "Ingresos Extra",
 ];
 
 /**
@@ -79,25 +73,8 @@ export const INCOME_CATEGORIES = [
  */
 export const PAYMENT_METHODS = [
   "Efectivo",
-  "Sigrid Interbank",
-  "Sigrid OH",
-  "Sigrid BCP Amex",
-  "Sigrid BCP Visa",
-  "Sigrid BBVA",
   "Sigrid Yape/plin/débito",
   "Diego Yape/plin/débito",
-  "Diego BBVA dolares débito",
-];
-
-/**
- * Gestores de pago disponibles
- * @constant {string[]}
- */
-export const PAYMENT_MANAGERS = [
-  "Fam Huarsaya Berlanga",
-  "Mamá de Sigrid",
-  "Fam de Diego",
-  "Otros",
 ];
 
 /**
@@ -116,7 +93,6 @@ export const SHEET_HEADERS = [
   "Category",
   "How Much?",
   "What payment method?",
-  "payment manager",
   "who recorded",
 ];
 

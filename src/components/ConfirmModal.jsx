@@ -101,11 +101,6 @@ const ConfirmModal = ({
                     </div>
 
                     <div>
-                        <span className="font-medium text-gray-700">🏦 Gestor:</span>
-                        <span className="ml-2 text-gray-600">{data['payment manager'] || 'No especificado'}</span>
-                    </div>
-
-                    <div>
                         <span className="font-medium text-gray-700">👤 Registrado por:</span>
                         <span className="ml-2 text-gray-600">{data['who recorded'] || 'No especificado'}</span>
                     </div>
