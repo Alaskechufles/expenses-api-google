@@ -59,7 +59,10 @@ function App() {
     loadData,
     createRow,
     updateRow,
-    deleteRow
+    deleteRow,
+    saveBudget,
+    loadBudget,
+    getBudgetMonths
   } = useGoogleSheets(config);
 
   // Validar que las variables de entorno estén configuradas
@@ -224,7 +227,15 @@ function App() {
           />
           <Route
             path="/budget"
-            element={<BudgetPage expenses={data} />}
+            element={
+              <BudgetPage 
+                expenses={data} 
+                saveBudget={saveBudget}
+                loadBudget={loadBudget}
+                getBudgetMonths={getBudgetMonths}
+                loading={loading}
+              />
+            }
           />
           <Route
             path="/metrics"
