@@ -222,6 +222,61 @@ const useGoogleSheets = (config) => {
     }
   };
 
+  // ============ FUNCIONES PARA PRESUPUESTOS ============
+
+  /**
+   * Guarda el presupuesto de un mes específico
+   * @param {string} month - Mes en formato YYYY-MM
+   * @param {Object} budgetData - Datos del presupuesto
+   * @returns {Promise<boolean>} True si se guardó exitosamente
+   */
+  const saveBudget = async (month, budgetData) => {
+    try {
+      setLoading(true);
+      setError(null);
+      await sheetsService.saveBudget(month, budgetData);
+      return true;
+    } catch (err) {
+      setError(`Error guardando presupuesto: ${err.message}`);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Carga el presupuesto de un mes específico
+   * @param {string} month - Mes en formato YYYY-MM
+   * @returns {Promise<Object>} Datos del presupuesto
+   */
+  const loadBudget = async (month) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const budget = await sheetsService.loadBudget(month);
+      return budget;
+    } catch (err) {
+      setError(`Error cargando presupuesto: ${err.message}`);
+      return {};
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Obtiene todos los meses con presupuestos guardados
+   * @returns {Promise<Array<string>>} Array de meses
+   */
+  const getBudgetMonths = async () => {
+    try {
+      setError(null);
+      return await sheetsService.getBudgetMonths();
+    } catch (err) {
+      setError(`Error obteniendo meses: ${err.message}`);
+      return [];
+    }
+  };
+
   return {
     // Estado
     isInitialized,
@@ -241,6 +296,11 @@ const useGoogleSheets = (config) => {
     updateRow,
     deleteRow,
     searchRows,
+
+    // Métodos de presupuestos
+    saveBudget,
+    loadBudget,
+    getBudgetMonths,
 
     // Servicio directo (para operaciones avanzadas)
     sheetsService,

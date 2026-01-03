@@ -28,40 +28,94 @@
  * @license MIT
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BUDGET_CATEGORIES, calculateDiezmo, calculateAhorros, parseAmount, formatCurrency } from '../constants/expenseConstants';
 
 /**
  * Componente de página de presupuestos mensuales
  * @param {Object} props - Props del componente
  * @param {Array} props.expenses - Array de gastos e ingresos registrados
+ * @param {Function} props.saveBudget - Función para guardar presupuesto
+ * @param {Function} props.loadBudget - Función para cargar presupuesto
+ * @param {Function} props.getBudgetMonths - Función para obtener meses con presupuestos
+ * @param {boolean} props.loading - Estado de carga
  * @returns {JSX.Element} Página de presupuestos
  */
-const BudgetPage = ({ expenses = [] }) => {
+const BudgetPage = ({ expenses = [], saveBudget, loadBudget, getBudgetMonths, loading: externalLoading }) => {
     const currentDate = new Date();
     const [selectedMonth, setSelectedMonth] = useState(`${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`);
     const [budgetData, setBudgetData] = useState({});
     const [isEditing, setIsEditing] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveMessage, setSaveMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const loadingRef = useRef(false); // Para evitar cargas duplicadas
 
-    // Inicializar presupuesto con valores por defecto
+    // Cargar presupuesto cuando cambia el mes
     useEffect(() => {
-        if (!budgetData[selectedMonth]) {
-            const initialBudget = {};
-            Object.keys(BUDGET_CATEGORIES).forEach(category => {
-                initialBudget[category] = {
-                    expected: 0,
-                    real: 0
-                };
-            });
-            setBudgetData(prev => ({
-                ...prev,
-                [selectedMonth]: initialBudget
-            }));
-        }
-    }, [selectedMonth]);
+        const loadMonthBudget = async () => {
+            // Evitar cargas duplicadas
+            if (!loadBudget || loadingRef.current) return;
+            
+            // Si ya tenemos datos para este mes, no recargar
+            if (budgetData[selectedMonth]) return;
+
+            loadingRef.current = true;
+            setIsLoading(true);
+
+            try {
+                const loadedBudget = await loadBudget(selectedMonth);
+                
+                // Inicializar con valores por defecto si no hay datos guardados
+                const initialBudget = {};
+                Object.keys(BUDGET_CATEGORIES).forEach(category => {
+                    initialBudget[category] = {
+                        expected: loadedBudget[category]?.expected || 0,
+                        real: 0
+                    };
+                });
+
+                // Calcular Diezmo y Ahorros esperados automáticamente
+                const pathwayExpected = initialBudget.Pathway?.expected || 0;
+                const funvalExpected = initialBudget.Funval?.expected || 0;
+                const mendelExpected = initialBudget.Mendel?.expected || 0;
+                const ingresosExtraExpected = initialBudget["Ingresos Extra"]?.expected || 0;
+                
+                initialBudget['Diezmo'].expected = (pathwayExpected + funvalExpected + mendelExpected + ingresosExtraExpected) * 0.10;
+                initialBudget['Ahorros'].expected = pathwayExpected + (funvalExpected * 0.05) + (mendelExpected * 0.05);
+
+                setBudgetData(prev => ({
+                    ...prev,
+                    [selectedMonth]: initialBudget
+                }));
+            } catch (error) {
+                console.error('Error cargando presupuesto:', error);
+                // Inicializar con valores vacíos en caso de error
+                const initialBudget = {};
+                Object.keys(BUDGET_CATEGORIES).forEach(category => {
+                    initialBudget[category] = {
+                        expected: 0,
+                        real: 0
+                    };
+                });
+                setBudgetData(prev => ({
+                    ...prev,
+                    [selectedMonth]: initialBudget
+                }));
+            } finally {
+                loadingRef.current = false;
+                setIsLoading(false);
+            }
+        };
+
+        loadMonthBudget();
+    }, [selectedMonth]); // Removido loadBudget de dependencias para evitar loops
 
     // Calcular montos reales desde las transacciones
     useEffect(() => {
+        // Esperar a que haya datos del presupuesto cargados
+        if (!budgetData[selectedMonth]) return;
+
         const [year, month] = selectedMonth.split('-');
         const filteredExpenses = expenses.filter(expense => {
             const expenseDate = new Date(expense.data.Date);
@@ -88,14 +142,16 @@ const BudgetPage = ({ expenses = [] }) => {
         realAmounts['Diezmo'] = calculateDiezmo(realAmounts);
         realAmounts['Ahorros'] = calculateAhorros(realAmounts);
 
-        // Actualizar el presupuesto con los montos reales
+        // Actualizar SOLO los montos reales, manteniendo los esperados
         setBudgetData(prev => {
-            const currentBudget = prev[selectedMonth] || {};
+            const currentBudget = prev[selectedMonth];
+            if (!currentBudget) return prev;
+            
             const updatedBudget = {};
             
             Object.keys(BUDGET_CATEGORIES).forEach(category => {
                 updatedBudget[category] = {
-                    expected: currentBudget[category]?.expected || 0,
+                    expected: currentBudget[category]?.expected || 0, // Mantener el expected existente
                     real: realAmounts[category] || 0
                 };
             });
@@ -105,19 +161,78 @@ const BudgetPage = ({ expenses = [] }) => {
                 [selectedMonth]: updatedBudget
             };
         });
-    }, [expenses, selectedMonth]);
+    }, [expenses, selectedMonth, budgetData[selectedMonth]?.Pathway?.expected]); // Agregamos una dependencia del expected para saber cuándo se cargaron los datos
 
     const handleExpectedChange = (category, value) => {
-        setBudgetData(prev => ({
-            ...prev,
-            [selectedMonth]: {
-                ...prev[selectedMonth],
-                [category]: {
-                    ...prev[selectedMonth][category],
-                    expected: parseAmount(value)
+        setBudgetData(prev => {
+            const newBudgetData = {
+                ...prev,
+                [selectedMonth]: {
+                    ...prev[selectedMonth],
+                    [category]: {
+                        ...prev[selectedMonth][category],
+                        expected: parseAmount(value)
+                    }
                 }
+            };
+
+            // Recalcular Diezmo y Ahorros esperados automáticamente
+            const currentMonthData = newBudgetData[selectedMonth];
+            
+            // Calcular Diezmo esperado
+            const pathwayExpected = currentMonthData.Pathway?.expected || 0;
+            const funvalExpected = currentMonthData.Funval?.expected || 0;
+            const mendelExpected = currentMonthData.Mendel?.expected || 0;
+            const ingresosExtraExpected = currentMonthData["Ingresos Extra"]?.expected || 0;
+            
+            const diezmoExpected = (pathwayExpected + funvalExpected + mendelExpected + ingresosExtraExpected) * 0.10;
+            
+            // Calcular Ahorros esperados
+            const ahorrosExpected = pathwayExpected + (funvalExpected * 0.05) + (mendelExpected * 0.05);
+            
+            // Actualizar Diezmo y Ahorros con los valores calculados
+            newBudgetData[selectedMonth] = {
+                ...newBudgetData[selectedMonth],
+                'Diezmo': {
+                    ...newBudgetData[selectedMonth]['Diezmo'],
+                    expected: diezmoExpected
+                },
+                'Ahorros': {
+                    ...newBudgetData[selectedMonth]['Ahorros'],
+                    expected: ahorrosExpected
+                }
+            };
+
+            return newBudgetData;
+        });
+    };
+
+    const handleSaveBudget = async () => {
+        if (!saveBudget) {
+            alert('Función de guardado no disponible');
+            return;
+        }
+
+        if (isEditing) {
+            // Guardar
+            setIsSaving(true);
+            setSaveMessage('');
+            try {
+                const success = await saveBudget(selectedMonth, budgetData[selectedMonth]);
+                if (success) {
+                    setSaveMessage('✅ Presupuesto guardado exitosamente');
+                    setTimeout(() => setSaveMessage(''), 3000);
+                } else {
+                    setSaveMessage('❌ Error al guardar presupuesto');
+                }
+            } catch (error) {
+                console.error('Error guardando:', error);
+                setSaveMessage('❌ Error al guardar presupuesto');
+            } finally {
+                setIsSaving(false);
             }
-        }));
+        }
+        setIsEditing(!isEditing);
     };
 
     const calculateTotals = () => {
@@ -142,6 +257,18 @@ const BudgetPage = ({ expenses = [] }) => {
     const totals = calculateTotals();
     const currentBudget = budgetData[selectedMonth] || {};
 
+    // Mostrar indicador de carga mientras se cargan los datos
+    if (isLoading && !currentBudget.Pathway) {
+        return (
+            <div className="container mx-auto px-4 py-6 max-w-7xl">
+                <div className="flex justify-center items-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                    <span className="ml-3 text-gray-600">Cargando presupuesto...</span>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="container mx-auto px-4 py-6 max-w-7xl">
             {/* Header */}
@@ -149,16 +276,22 @@ const BudgetPage = ({ expenses = [] }) => {
                 <div>
                     <h1 className="text-3xl font-bold text-gray-800 mb-2">💰 Presupuestos Mensuales</h1>
                     <p className="text-gray-600">Planifica y monitorea tus ingresos y gastos esperados vs reales</p>
+                    {saveMessage && (
+                        <p className={`mt-2 text-sm font-medium ${saveMessage.includes('✅') ? 'text-green-600' : 'text-red-600'}`}>
+                            {saveMessage}
+                        </p>
+                    )}
                 </div>
                 <button
-                    onClick={() => setIsEditing(!isEditing)}
-                    className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+                    onClick={handleSaveBudget}
+                    disabled={isSaving || externalLoading || isLoading}
+                    className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
                         isEditing 
                         ? 'bg-green-500 hover:bg-green-600 text-white' 
                         : 'bg-blue-500 hover:bg-blue-600 text-white'
                     }`}
                 >
-                    {isEditing ? '✅ Guardar' : '✏️ Editar Montos'}
+                    {isSaving ? '⏳ Guardando...' : isEditing ? '✅ Guardar' : '✏️ Editar Montos'}
                 </button>
             </div>
 
@@ -171,7 +304,8 @@ const BudgetPage = ({ expenses = [] }) => {
                     type="month"
                     value={selectedMonth}
                     onChange={(e) => setSelectedMonth(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    disabled={isEditing}
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                 />
             </div>
 
