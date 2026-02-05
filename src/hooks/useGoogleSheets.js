@@ -96,6 +96,13 @@ const useGoogleSheets = (config) => {
     sheetsService,
   ]);
 
+  // Cargar datos automáticamente si el usuario ya está autenticado
+  useEffect(() => {
+    if (isInitialized && isSignedIn && data.length === 0 && !loading) {
+      loadData();
+    }
+  }, [isInitialized, isSignedIn]);
+
   // Iniciar sesión
   const signIn = async () => {
     try {
