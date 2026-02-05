@@ -28,7 +28,7 @@
  * @license MIT
  */
 
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import useGoogleSheets from './hooks/useGoogleSheets';
 import Navigation from './components/Navigation';
 import ExpensesPage from './pages/ExpensesPage';

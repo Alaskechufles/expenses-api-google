@@ -29,7 +29,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { BUDGET_CATEGORIES, calculateDiezmo, calculateAhorros, parseAmount, formatCurrency } from '../constants/expenseConstants';
+import { BUDGET_CATEGORIES, parseAmount, formatCurrency } from '../constants/expenseConstants';
 
 /**
  * Componente de página de presupuestos mensuales
@@ -74,15 +74,6 @@ const BudgetPage = ({ expenses = [], saveBudget, loadBudget, getBudgetMonths, lo
                         real: 0
                     };
                 });
-
-                // Calcular Diezmo y Ahorros esperados automáticamente
-                const pathwayExpected = initialBudget.Pathway?.expected || 0;
-                const funvalExpected = initialBudget.Funval?.expected || 0;
-                const mendelExpected = initialBudget.Mendel?.expected || 0;
-                const ingresosExtraExpected = initialBudget["Ingresos Extra"]?.expected || 0;
-                
-                initialBudget['Diezmo'].expected = (pathwayExpected + funvalExpected + mendelExpected + ingresosExtraExpected) * 0.10;
-                initialBudget['Ahorros'].expected = pathwayExpected + (funvalExpected * 0.05) + (mendelExpected * 0.05);
 
                 setBudgetData(prev => ({
                     ...prev,
@@ -138,10 +129,6 @@ const BudgetPage = ({ expenses = [], saveBudget, loadBudget, getBudgetMonths, lo
             }
         });
 
-        // Calcular Diezmo y Ahorros automáticamente
-        realAmounts['Diezmo'] = calculateDiezmo(realAmounts);
-        realAmounts['Ahorros'] = calculateAhorros(realAmounts);
-
         // Actualizar SOLO los montos reales, manteniendo los esperados
         setBudgetData(prev => {
             const currentBudget = prev[selectedMonth];
@@ -173,33 +160,6 @@ const BudgetPage = ({ expenses = [], saveBudget, loadBudget, getBudgetMonths, lo
                         ...prev[selectedMonth][category],
                         expected: parseAmount(value)
                     }
-                }
-            };
-
-            // Recalcular Diezmo y Ahorros esperados automáticamente
-            const currentMonthData = newBudgetData[selectedMonth];
-            
-            // Calcular Diezmo esperado
-            const pathwayExpected = currentMonthData.Pathway?.expected || 0;
-            const funvalExpected = currentMonthData.Funval?.expected || 0;
-            const mendelExpected = currentMonthData.Mendel?.expected || 0;
-            const ingresosExtraExpected = currentMonthData["Ingresos Extra"]?.expected || 0;
-            
-            const diezmoExpected = (pathwayExpected + funvalExpected + mendelExpected + ingresosExtraExpected) * 0.10;
-            
-            // Calcular Ahorros esperados
-            const ahorrosExpected = pathwayExpected + (funvalExpected * 0.05) + (mendelExpected * 0.05);
-            
-            // Actualizar Diezmo y Ahorros con los valores calculados
-            newBudgetData[selectedMonth] = {
-                ...newBudgetData[selectedMonth],
-                'Diezmo': {
-                    ...newBudgetData[selectedMonth]['Diezmo'],
-                    expected: diezmoExpected
-                },
-                'Ahorros': {
-                    ...newBudgetData[selectedMonth]['Ahorros'],
-                    expected: ahorrosExpected
                 }
             };
 

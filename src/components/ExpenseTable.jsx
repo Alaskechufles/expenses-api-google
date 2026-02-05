@@ -46,11 +46,33 @@ const ExpenseTable = ({ data, onEdit, onDelete, loading }) => {
     const [searchColumn, setSearchColumn] = useState('Description');
     const [categoryFilter, setCategoryFilter] = useState('');
     const [typeFilter, setTypeFilter] = useState(''); // 'income', 'expense', ''
+    const [monthFilter, setMonthFilter] = useState(() => {
+        // Por defecto, mes actual
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    });
     const [showFilters, setShowFilters] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [recordToDelete, setRecordToDelete] = useState(null);
     const recordsPerPage = 10;
+
+    // Generar lista de meses disponibles desde los datos
+    const currentMonth = (() => {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    })();
+    
+    const availableMonths = [...new Set([
+        currentMonth,
+        ...data.map(row => {
+            if (row.data['Date']) {
+                const date = new Date(row.data['Date']);
+                return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            }
+            return null;
+        }).filter(Boolean)
+    ])].sort().reverse();
 
     // Ordenar datos por fecha (más reciente primero) y luego por índice descendente
     const sortedData = [...data].sort((a, b) => {
@@ -64,6 +86,17 @@ const ExpenseTable = ({ data, onEdit, onDelete, loading }) => {
 
     // Filtrar datos
     const filteredData = sortedData.filter(row => {
+        // Filtro de mes
+        if (monthFilter) {
+            const date = row.data['Date'] ? new Date(row.data['Date']) : null;
+            if (date) {
+                const rowMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                if (rowMonth !== monthFilter) return false;
+            } else {
+                return false; // Si no tiene fecha, no mostrar cuando hay filtro de mes
+            }
+        }
+
         // Filtro de búsqueda
         if (searchTerm) {
             const value = row.data[searchColumn];
@@ -189,7 +222,29 @@ const ExpenseTable = ({ data, onEdit, onDelete, loading }) => {
                 </div>
 
                 {showFilters && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-fadeIn">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 animate-fadeIn">
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Mes:</label>
+                            <select
+                                value={monthFilter}
+                                onChange={(e) => resetPageWhenFiltering(e.target.value, setMonthFilter)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                            >
+                                <option value="">Todos los meses</option>
+                                {availableMonths.map(month => {
+                                    const [year, m] = month.split('-');
+                                    const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                                                       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                                    return (
+                                        <option key={month} value={month}>
+                                            {monthNames[parseInt(m) - 1]} {year}
+                                        </option>
+                                    );
+                                })}
+                            </select>
+                        </div>
+
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Buscar en:</label>
                             <select
@@ -240,16 +295,19 @@ const ExpenseTable = ({ data, onEdit, onDelete, loading }) => {
                                 <option value="expense">💸 Solo Gastos</option>
                             </select>
                         </div>
+
+                        
                     </div>
                 )}
 
-                {(searchTerm || categoryFilter || typeFilter) && (
+                {(searchTerm || categoryFilter || typeFilter || monthFilter) && (
                     <div className="mt-4">
                         <button
                             onClick={() => {
                                 setSearchTerm('');
                                 setCategoryFilter('');
                                 setTypeFilter('');
+                                setMonthFilter('');
                                 setCurrentPage(1);
                             }}
                             className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 hover:scale-110 transition-all duration-200"

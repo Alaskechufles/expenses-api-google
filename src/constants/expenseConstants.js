@@ -92,9 +92,9 @@ export const BUDGET_CATEGORIES = {
   "Mendel": { type: "IV", isIncome: true, isEditable: true },
   "Ingresos Extra": { type: "IV", isIncome: true, isEditable: true },
   
-  // Gastos - Calculados automáticamente
-  "Diezmo": { type: "GV", isIncome: false, isEditable: false, isCalculated: true },
-  "Ahorros": { type: "GV", isIncome: false, isEditable: false, isCalculated: true },
+  // Gastos - Diezmo y Ahorros editables
+  "Diezmo": { type: "GV", isIncome: false, isEditable: true },
+  "Ahorros": { type: "GV", isIncome: false, isEditable: true },
   
   // Gastos - Editables
   "Ayuno": { type: "GF", isIncome: false, isEditable: true },

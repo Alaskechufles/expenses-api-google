@@ -41,6 +41,7 @@ class GoogleSheetsService {
     this.google = null;
     this.tokenClient = null;
     this.accessToken = null;
+    this.tokenExpiry = null; // Timestamp de expiración del token
     this.spreadsheetId = ""; // Tu ID de la hoja de cálculo
     this.range = "A1:Z1000"; // Rango de datos
     this.mainSheetName = "Sheet1"; // Nombre de la hoja principal (puede ser configurado)
@@ -48,6 +49,60 @@ class GoogleSheetsService {
     this.isSignedInState = false;
     this.budgetSheetChecked = false; // Cache para evitar verificar la hoja repetidamente
     this.pendingRequests = new Map(); // Para evitar solicitudes duplicadas
+    
+    // Intentar restaurar token desde sessionStorage
+    this.restoreToken();
+  }
+
+  // Guardar token en sessionStorage
+  saveToken(accessToken, expiresIn) {
+    const expiry = Date.now() + (expiresIn * 1000);
+    this.accessToken = accessToken;
+    this.tokenExpiry = expiry;
+    this.isSignedInState = true;
+    
+    try {
+      sessionStorage.setItem('google_access_token', accessToken);
+      sessionStorage.setItem('google_token_expiry', expiry.toString());
+    } catch (e) {
+      console.warn('No se pudo guardar el token en sessionStorage:', e);
+    }
+  }
+
+  // Restaurar token desde sessionStorage
+  restoreToken() {
+    try {
+      const savedToken = sessionStorage.getItem('google_access_token');
+      const savedExpiry = sessionStorage.getItem('google_token_expiry');
+      
+      if (savedToken && savedExpiry) {
+        const expiry = parseInt(savedExpiry, 10);
+        // Verificar que el token no haya expirado (con 5 min de margen)
+        if (Date.now() < expiry - 300000) {
+          this.accessToken = savedToken;
+          this.tokenExpiry = expiry;
+          this.isSignedInState = true;
+          console.log('Token restaurado desde sessionStorage');
+          return true;
+        } else {
+          // Token expirado, limpiar
+          this.clearStoredToken();
+        }
+      }
+    } catch (e) {
+      console.warn('No se pudo restaurar el token desde sessionStorage:', e);
+    }
+    return false;
+  }
+
+  // Limpiar token almacenado
+  clearStoredToken() {
+    try {
+      sessionStorage.removeItem('google_access_token');
+      sessionStorage.removeItem('google_token_expiry');
+    } catch (e) {
+      console.warn('No se pudo limpiar el token de sessionStorage:', e);
+    }
   }
 
   // Inicializar Google API con la nueva Google Identity Services
@@ -100,6 +155,15 @@ class GoogleSheetsService {
       this.gapi = window.gapi;
       this.google = window.google;
       this.isInitialized = true;
+      
+      // Si hay un token restaurado, configurarlo en gapi
+      if (this.accessToken && this.isSignedInState) {
+        this.gapi.client.setToken({
+          access_token: this.accessToken,
+        });
+        console.log('Token restaurado configurado en gapi');
+      }
+      
       console.log("Google Sheets API inicializada correctamente con GIS");
     } catch (error) {
       console.error("Error inicializando Google Sheets API:", error);
@@ -126,8 +190,9 @@ class GoogleSheetsService {
             reject(response);
             return;
           }
-          this.accessToken = response.access_token;
-          this.isSignedInState = true;
+          
+          // Guardar token con persistencia (expires_in viene en segundos)
+          this.saveToken(response.access_token, response.expires_in || 3600);
 
           // Configurar el token para las requests
           this.gapi.client.setToken({
@@ -155,7 +220,9 @@ class GoogleSheetsService {
       }
 
       this.accessToken = null;
+      this.tokenExpiry = null;
       this.isSignedInState = false;
+      this.clearStoredToken();
       this.gapi.client.setToken(null);
 
       console.log("Sesión cerrada correctamente");
@@ -326,13 +393,19 @@ class GoogleSheetsService {
       if (data.length === 0) return { headers: [], rows: [] };
 
       const headers = data[0];
-      const rows = data.slice(1).map((row, index) => ({
-        rowIndex: index + 2, // +2 porque empezamos desde la fila 2 (después del header)
-        data: headers.reduce((obj, header, i) => {
-          obj[header] = row[i] || "";
-          return obj;
-        }, {}),
-      }));
+      const rows = data.slice(1)
+        .map((row, index) => ({
+          rowIndex: index + 2, // +2 porque empezamos desde la fila 2 (después del header)
+          data: headers.reduce((obj, header, i) => {
+            obj[header] = row[i] || "";
+            return obj;
+          }, {}),
+        }))
+        // Filtrar filas vacías (donde todos los valores están vacíos)
+        .filter(row => {
+          const values = Object.values(row.data);
+          return values.some(value => value !== "" && value !== null && value !== undefined);
+        });
 
       return { headers, rows };
     } catch (error) {
