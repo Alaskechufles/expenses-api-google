@@ -393,13 +393,19 @@ class GoogleSheetsService {
       if (data.length === 0) return { headers: [], rows: [] };
 
       const headers = data[0];
-      const rows = data.slice(1).map((row, index) => ({
-        rowIndex: index + 2, // +2 porque empezamos desde la fila 2 (después del header)
-        data: headers.reduce((obj, header, i) => {
-          obj[header] = row[i] || "";
-          return obj;
-        }, {}),
-      }));
+      const rows = data.slice(1)
+        .map((row, index) => ({
+          rowIndex: index + 2, // +2 porque empezamos desde la fila 2 (después del header)
+          data: headers.reduce((obj, header, i) => {
+            obj[header] = row[i] || "";
+            return obj;
+          }, {}),
+        }))
+        // Filtrar filas vacías (donde todos los valores están vacíos)
+        .filter(row => {
+          const values = Object.values(row.data);
+          return values.some(value => value !== "" && value !== null && value !== undefined);
+        });
 
       return { headers, rows };
     } catch (error) {
