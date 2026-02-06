@@ -28,7 +28,7 @@
  * @license MIT
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { formatCurrency, parseAmount, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../constants/expenseConstants';
 
 /**
@@ -38,14 +38,51 @@ import { formatCurrency, parseAmount, EXPENSE_CATEGORIES, INCOME_CATEGORIES } fr
  * @returns {JSX.Element} Página con métricas y estadísticas
  */
 const MetricsPage = ({ data }) => {
+    // Estado para el filtro de mes
+    const [monthFilter, setMonthFilter] = useState(''); // '' = todos los meses
+
+    // Generar lista de meses disponibles
+    const availableMonths = useMemo(() => {
+        if (!data || data.length === 0) return [];
+        
+        const currentMonth = (() => {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        })();
+        
+        return [...new Set([
+            currentMonth,
+            ...data.map(row => {
+                if (row.data['Date']) {
+                    const date = new Date(row.data['Date']);
+                    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                }
+                return null;
+            }).filter(Boolean)
+        ])].sort().reverse();
+    }, [data]);
+
+    // Filtrar datos por mes seleccionado
+    const filteredData = useMemo(() => {
+        if (!data) return [];
+        if (!monthFilter) return data; // Sin filtro, mostrar todos
+        
+        return data.filter(row => {
+            const date = row.data['Date'] ? new Date(row.data['Date']) : null;
+            if (!date) return false;
+            const rowMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            return rowMonth === monthFilter;
+        });
+    }, [data, monthFilter]);
+
     const metrics = useMemo(() => {
-        if (!data || data.length === 0) return null;
+        if (!filteredData || filteredData.length === 0) return null;
 
         const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
         const currentYear = new Date().getFullYear().toString();
 
         // Calcular totales generales
-        const totals = data.reduce((acc, row) => {
+        const totals = filteredData.reduce((acc, row) => {
             const amount = parseAmount(row.data['How Much?']);
             const date = row.data['Date'];
             const category = row.data['Category'];
@@ -117,9 +154,10 @@ const MetricsPage = ({ data }) => {
             topIncomeCategories,
             topPaymentMethods,
             currentMonth,
-            currentYear
+            currentYear,
+            totalRecords: filteredData.length
         };
-    }, [data]);
+    }, [filteredData]);
 
     if (!data || data.length === 0) {
         return (
@@ -135,12 +173,98 @@ const MetricsPage = ({ data }) => {
         );
     }
 
+    // Nombres de meses para el selector
+    const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+    const getMonthLabel = (monthStr) => {
+        const [year, m] = monthStr.split('-');
+        return `${monthNames[parseInt(m) - 1]} ${year}`;
+    };
+
+    // Si hay filtro pero no hay datos para ese mes
+    if (!metrics && monthFilter) {
+        return (
+            <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="mb-6 sm:mb-8">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">📊 Métricas Financieras</h1>
+                        <p className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">Análisis detallado de tus gastos e ingresos</p>
+                    </div>
+
+                    {/* Filtro por Mes */}
+                    <div className="bg-white rounded-lg shadow p-4 mb-6">
+                        <div className="flex flex-wrap items-center gap-4">
+                            <label className="text-sm font-medium text-gray-700">Filtrar por mes:</label>
+                            <select
+                                value={monthFilter}
+                                onChange={(e) => setMonthFilter(e.target.value)}
+                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            >
+                                <option value="">Todos los meses</option>
+                                {availableMonths.map(month => (
+                                    <option key={month} value={month}>
+                                        {getMonthLabel(month)}
+                                    </option>
+                                ))}
+                            </select>
+                            {monthFilter && (
+                                <button
+                                    onClick={() => setMonthFilter('')}
+                                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                                >
+                                    🔄 Ver todos
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="text-center py-12">
+                        <div className="text-6xl mb-4">📅</div>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-4">No hay datos para {getMonthLabel(monthFilter)}</h2>
+                        <p className="text-gray-600">Selecciona otro mes o ve todos los datos.</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="mb-6 sm:mb-8">
                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">📊 Métricas Financieras</h1>
                     <p className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">Análisis detallado de tus gastos e ingresos</p>
+                </div>
+
+                {/* Filtro por Mes */}
+                <div className="bg-white rounded-lg shadow p-4 mb-6">
+                    <div className="flex flex-wrap items-center gap-4">
+                        <label className="text-sm font-medium text-gray-700">Filtrar por mes:</label>
+                        <select
+                            value={monthFilter}
+                            onChange={(e) => setMonthFilter(e.target.value)}
+                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        >
+                            <option value="">Todos los meses</option>
+                            {availableMonths.map(month => (
+                                <option key={month} value={month}>
+                                    {getMonthLabel(month)}
+                                </option>
+                            ))}
+                        </select>
+                        {monthFilter && (
+                            <button
+                                onClick={() => setMonthFilter('')}
+                                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                            >
+                                🔄 Ver todos
+                            </button>
+                        )}
+                        <span className="text-sm text-gray-500 ml-auto">
+                            {filteredData.length} registro{filteredData.length !== 1 ? 's' : ''}
+                        </span>
+                    </div>
                 </div>
 
                 {/* Resumen General */}
@@ -182,7 +306,7 @@ const MetricsPage = ({ data }) => {
                             <div className="text-2xl sm:text-3xl mr-3 sm:mr-4">📋</div>
                             <div className="min-w-0 flex-1">
                                 <p className="text-xs sm:text-sm font-medium text-gray-600">Total Registros</p>
-                                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600">{data.length}</p>
+                                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600">{filteredData.length}</p>
                             </div>
                         </div>
                     </div>
